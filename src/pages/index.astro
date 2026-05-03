@@ -1,17 +1,120 @@
 ---
 
+import '../styles/global.css';
+import MarkdownWorkbench from '../components/MarkdownWorkbench';
+
+const fontCards = [
+	{
+		name: 'Sora',
+		stack: '"Sora", "Inter", system-ui, sans-serif',
+		sample: 'Editorial clarity with a sharp, modern edge.',
+		size: 'text-3xl',
+	},
+	{
+		name: 'Fraunces',
+		stack: '"Fraunces", Georgia, serif',
+		sample: 'High-contrast serif for refined headings and quotes.',
+		size: 'text-3xl',
+	},
+	{
+		name: 'IBM Plex Mono',
+		stack: '"IBM Plex Mono", "SFMono-Regular", Consolas, monospace',
+		sample: 'Code, labels, tokens, and technical metadata.',
+		size: 'text-2xl',
+	},
+	{
+		name: 'Inter Tight',
+		stack: '"Inter Tight", "Inter", system-ui, sans-serif',
+		sample: 'Compact UI rhythm for dashboards and surfaces.',
+		size: 'text-3xl',
+	},
+];
+
+const palettes = [
+	{ name: 'Aurora', value: '#7c3aed', accent: '#22d3ee', surface: '#0f172a' },
+	{ name: 'Solar', value: '#f97316', accent: '#fde68a', surface: '#1e293b' },
+	{ name: 'Mint', value: '#10b981', accent: '#a7f3d0', surface: '#0f172a' },
+	{ name: 'Rose', value: '#fb7185', accent: '#fecdd3', surface: '#1f2937' },
+	{ name: 'Cobalt', value: '#2563eb', accent: '#93c5fd', surface: '#111827' },
+	{ name: 'Graphite', value: '#111827', accent: '#f3f4f6', surface: '#030712' },
+];
 ---
 
-<html lang="en">
+<html lang="es" class="scroll-smooth">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Cosmic MD | Design system preview</title>
+		<meta
+			name="description"
+			content="Una landing moderna para previsualizar tipografías, colores, componentes y estilos de markdown."
+		/>
 	</head>
-	<body>
-		<h1>Astro</h1>
+	<body class="min-h-screen bg-[#050816] font-sans text-slate-100 antialiased">
+		<main class="relative overflow-hidden">
+			<div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.16),_transparent_30%),radial-gradient(circle_at_85%_20%,_rgba(124,58,237,0.2),_transparent_25%),linear-gradient(180deg,_#050816_0%,_#0b1120_45%,_#050816_100%)]"></div>
+			<div class="pointer-events-none absolute inset-0 opacity-50 [background-image:linear-gradient(rgba(148,163,184,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.08)_1px,transparent_1px)] [background-size:72px_72px]"></div>
+
+			<div class="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-6 py-8 sm:px-8 lg:px-10">
+				<header class="flex flex-col gap-5 rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-2xl shadow-slate-950/40 backdrop-blur-xl sm:p-8 lg:flex-row lg:items-end lg:justify-between">
+					<div class="max-w-3xl space-y-5">
+						<p class="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-100">
+							<span class="h-2 w-2 rounded-full bg-cyan-300"></span>
+							Design preview kit
+						</p>
+						<div class="space-y-3">
+							<h1 class="max-w-4xl text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-7xl">
+								Un sistema visual moderno para probar markdown, tipografías y color.
+							</h1>
+							<p class="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
+								Esta portada está pensada como una base editable para tu proyecto Astro + Tailwind + React: muestra jerarquías, tarjetas, componentes y una paleta lista para iterar.
+							</p>
+						</div>
+						<div class="flex flex-wrap gap-3">
+							<a href="#fonts" class="rounded-full bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02] hover:bg-cyan-200">
+								Ver tipografías
+							</a>
+							<a href="#palette" class="rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/30 hover:bg-white/10">
+								Explorar paleta
+							</a>
+						</div>
+					</div>
+
+					<div class="grid gap-3 rounded-[1.5rem] border border-white/10 bg-slate-950/45 p-4 text-sm text-slate-300 shadow-lg shadow-cyan-950/20 lg:min-w-[320px]">
+						<div class="flex items-center justify-between rounded-2xl border border-white/8 bg-white/5 px-4 py-3">
+							<div>
+								<p class="text-xs uppercase tracking-[0.25em] text-slate-400">Theme</p>
+								<p class="font-semibold text-white">Cosmic Night</p>
+							</div>
+							<div class="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-300">Ready</div>
+						</div>
+						<div class="grid grid-cols-3 gap-3">
+							<div class="rounded-2xl border border-white/8 bg-white/5 p-3">
+								<p class="text-xs text-slate-400">Cards</p>
+								<p class="mt-2 text-2xl font-black text-white">12</p>
+							</div>
+							<div class="rounded-2xl border border-white/8 bg-white/5 p-3">
+								<p class="text-xs text-slate-400">Fonts</p>
+								<p class="mt-2 text-2xl font-black text-white">4</p>
+							</div>
+							<div class="rounded-2xl border border-white/8 bg-white/5 p-3">
+								<p class="text-xs text-slate-400">Colors</p>
+								<p class="mt-2 text-2xl font-black text-white">6</p>
+							</div>
+						</div>
+					</div>
+				</header>
+
+				<MarkdownWorkbench client:load />
+
+				<footer class="flex flex-col gap-3 border-t border-white/10 pb-6 pt-1 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+					<p>Cosmic MD listo para expandirse a MD, MDX o componentes React si quieres convertirlo en sistema de documentación.</p>
+					<p class="text-slate-500">Astro + Tailwind + React</p>
+				</footer>
+			</div>
+		</main>
 	</body>
 </html>
