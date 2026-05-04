@@ -22,6 +22,48 @@ export type AccentOption = {
 	value: string;
 };
 
+export type SpacingTokens = {
+	xxs: string;
+	xs: string;
+	sm: string;
+	md: string;
+	lg: string;
+	xl: string;
+	xxl: string;
+	section: string;
+};
+
+export type RadiusTokens = {
+	none: string;
+	xs: string;
+	sm: string;
+	md: string;
+	lg: string;
+	xl: string;
+	full: string;
+};
+
+export type ButtonTokenSet = {
+	backgroundColor: string;
+	textColor: string;
+	rounded: string;
+	padding: string;
+	height?: string;
+};
+
+export type CardTokenSet = {
+	backgroundColor: string;
+	border: string;
+	borderRadius: string;
+	padding: string;
+};
+
+export type ComponentTokens = {
+	buttonPrimary: ButtonTokenSet;
+	buttonSecondary: ButtonTokenSet;
+	cardDefault: CardTokenSet;
+};
+
 export const colorPalettes: Record<PaletteType, ColorPalette> = {
 	aurora: { name: 'Aurora', primary: '#7c3aed', accent: '#22d3ee', surface: '#0f172a', text: '#f8fafc' },
 	solar: { name: 'Solar', primary: '#f97316', accent: '#fde68a', surface: '#1e293b', text: '#f8fafc' },

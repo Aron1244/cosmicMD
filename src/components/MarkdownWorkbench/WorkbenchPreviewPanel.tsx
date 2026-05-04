@@ -2,7 +2,6 @@ import type { CSSProperties } from 'react';
 import type { FontOption, FormatType, ProjectType } from './data';
 
 type WorkbenchPreviewPanelProps = {
-	selectedTheme: ThemeType;
 	selectedAccent: string;
 	selectedFont: FontOption;
 	selectedProjectType: ProjectType;

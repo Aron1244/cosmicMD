@@ -13,6 +13,9 @@ import {
 	themeModes,
 	type FontOption,
 	type FormatType,
+	type ComponentTokens,
+	type RadiusTokens,
+	type SpacingTokens,
 	type PaletteType,
 	type ProjectType,
 	type ThemeType,
@@ -152,6 +155,52 @@ export default function MarkdownWorkbench() {
 	const [selectedFont, setSelectedFont] = useState(fontOptions[0]);
 	const [selectedProjectType, setSelectedProjectType] = useState<ProjectType>('docs');
 	const [selectedFormat, setSelectedFormat] = useState<FormatType>('markdown');
+	const [documentName, setDocumentName] = useState('Cosmic MD Design System');
+	const [documentSummary, setDocumentSummary] = useState('A customizable design system spec for markdown-first projects.');
+	const [implementationNotes, setImplementationNotes] = useState(
+		'- Keep interactive targets at 44px minimum\n- Prefer reusable tokens over one-off values\n- Document the final components states',
+	);
+	const [spacingTokens, setSpacingTokens] = useState<SpacingTokens>({
+		xxs: '2px',
+		xs: '4px',
+		sm: '8px',
+		md: '12px',
+		lg: '16px',
+		xl: '24px',
+		xxl: '32px',
+		section: '64px',
+	});
+	const [radiusTokens, setRadiusTokens] = useState<RadiusTokens>({
+		none: '0px',
+		xs: '1px',
+		sm: '2px',
+		md: '4px',
+		lg: '8px',
+		xl: '12px',
+		full: '9999px',
+	});
+	const [componentTokens, setComponentTokens] = useState<ComponentTokens>({
+		buttonPrimary: {
+			backgroundColor: '#22d3ee',
+			textColor: '#020617',
+			rounded: '{rounded.lg}',
+			padding: '12px 24px',
+			height: '44px',
+		},
+		buttonSecondary: {
+			backgroundColor: '#1f2937',
+			textColor: '#f8fafc',
+			rounded: '{rounded.lg}',
+			padding: '12px 24px',
+			height: '44px',
+		},
+		cardDefault: {
+			backgroundColor: '{colors.surface-dark}',
+			border: '1px solid rgba(148, 163, 184, 0.18)',
+			borderRadius: '{rounded.xl}',
+			padding: '{spacing.lg}',
+		},
+	});
 	const [selectedMarkdown, setSelectedMarkdown] = useState(initialMarkdown);
 	const [copied, setCopied] = useState(false);
 	const [fontDropdownOpen, setFontDropdownOpen] = useState(false);
@@ -163,11 +212,32 @@ export default function MarkdownWorkbench() {
 	// Generate complete DESIGN.md file
 	const generatedDesignMD = useMemo(() => {
 		const palette = colorPalettes[selectedPalette];
+		const notesBlock = implementationNotes
+			.split('\n')
+			.map((line) => line.trim())
+			.filter(Boolean)
+			.map((line) => `- ${line}`)
+			.join('\n');
+		const spacingBlock = Object.entries(spacingTokens)
+			.map(([key, value]) => `  ${key}: ${value}`)
+			.join('\n');
+		const radiusBlock = Object.entries(radiusTokens)
+			.map(([key, value]) => `  ${key}: ${value}`)
+			.join('\n');
+		const componentBlock = Object.entries(componentTokens)
+			.map(([sectionKey, values]) => {
+				const entries = Object.entries(values)
+					.map(([propertyKey, value]) => `  ${propertyKey}: ${value}`)
+					.join('\n');
+				return `${sectionKey}:\n${entries}`;
+			})
+			.join('\n\n');
 		return `---
 version: alpha
-name: ${projectMeta.title} Design System
+name: ${documentName}
 description: |
-  A modern design system built for ${selectedProjectType} with ${themeModes.find(t => t.value === selectedTheme)?.label} mode support.
+  ${documentSummary}
+  Built for ${selectedProjectType} with ${themeModes.find(t => t.value === selectedTheme)?.label} mode support.
   Features a ${palette.name} color palette with customizable typography and component tokens.
 
 colors:
@@ -228,43 +298,13 @@ typography:
     lineHeight: 1.6
 
 rounded:
-  none: 0px
-  xs: 1px
-  sm: 2px
-  md: 4px
-  lg: 8px
-  xl: 12px
-  full: 9999px
+${radiusBlock}
 
 spacing:
-  xxs: 2px
-  xs: 4px
-  sm: 8px
-  md: 12px
-  lg: 16px
-  xl: 24px
-  xxl: 32px
-  section: 64px
+${spacingBlock}
 
 components:
-  button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.text-dark}"
-    rounded: "{rounded.lg}"
-    padding: 12px 24px
-    height: 44px
-    
-  button-secondary:
-    backgroundColor: "{colors.surface-soft}"
-    textColor: "{colors.text-light}"
-    rounded: "{rounded.lg}"
-    padding: 12px 24px
-    
-  card-default:
-    backgroundColor: "{colors.surface-dark}"
-    border: "1px solid rgba(148, 163, 184, 0.18)"
-    borderRadius: "{rounded.xl}"
-    padding: "{spacing.lg}"
+${componentBlock}
 
 ---
 
@@ -383,15 +423,19 @@ All interactive elements maintain **44px minimum height** for proper touch usabi
 
 ## Known Gaps
 
-- Advanced animation patterns TBD
-- Accessibility labels (ARIA) in separate spec
-- Print styles not yet documented
+	- Advanced animation patterns TBD
+	- Accessibility labels (ARIA) in separate spec
+	- Print styles not yet documented
+
+## Implementation Notes
+
+${notesBlock || '- No additional notes yet'}
 
 ---
 
 **Generated for:** ${selectedProjectType} • **Format:** ${formatLabelMap[selectedFormat]} • **Theme:** ${themeModes.find(t => t.value === selectedTheme)?.label} • **Palette:** ${palette.name}
 `;
-	}, [projectMeta.title, selectedProjectType, selectedTheme, selectedFormat, selectedFont.label, selectedPalette, selectedMarkdown]);
+	}, [documentName, documentSummary, implementationNotes, selectedProjectType, selectedTheme, selectedFormat, selectedFont.label, selectedPalette, spacingTokens, radiusTokens, componentTokens]);
 	
 	const generatedDocument = generatedDesignMD;
 
@@ -490,6 +534,12 @@ All interactive elements maintain **44px minimum height** for proper touch usabi
 					selectedProjectType={selectedProjectType}
 					selectedFormat={selectedFormat}
 					selectedFont={selectedFont}
+					documentName={documentName}
+					documentSummary={documentSummary}
+					implementationNotes={implementationNotes}
+					spacingTokens={spacingTokens}
+					radiusTokens={radiusTokens}
+					componentTokens={componentTokens}
 					selectedMarkdown={selectedMarkdown}
 					projectMeta={projectMeta}
 					projectTypes={projectTypes}
@@ -498,13 +548,26 @@ All interactive elements maintain **44px minimum height** for proper touch usabi
 					copied={copied}
 					onSelectProjectType={setSelectedProjectType}
 					onSelectFormat={setSelectedFormat}
+					onChangeDocumentName={setDocumentName}
+					onChangeDocumentSummary={setDocumentSummary}
+					onChangeImplementationNotes={setImplementationNotes}
+					onChangeSpacingToken={(key, value) => setSpacingTokens((current) => ({ ...current, [key]: value }))}
+					onChangeRadiusToken={(key, value) => setRadiusTokens((current) => ({ ...current, [key]: value }))}
+					onChangeComponentToken={(section, key, value) =>
+						setComponentTokens((current) => ({
+							...current,
+							[section]: {
+								...current[section],
+								[key]: value,
+							},
+						}))
+					}
 					onChangeMarkdown={setSelectedMarkdown}
 					onDownload={handleDownload}
 					onCopy={handleCopy}
 				/>
 
 				<WorkbenchPreviewPanel
-					selectedTheme={selectedTheme}
 					selectedAccent={selectedAccent}
 					selectedFont={selectedFont}
 					selectedProjectType={selectedProjectType}
