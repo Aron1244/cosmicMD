@@ -152,6 +152,8 @@ export default function MarkdownWorkbench() {
 	const [selectedTheme, setSelectedTheme] = useState<ThemeType>('dark');
 	const [selectedPalette, setSelectedPalette] = useState<PaletteType>('aurora');
 	const [selectedAccent, setSelectedAccent] = useState(colorPalettes.aurora.accent);
+	const [selectedThemeColor, setSelectedThemeColor] = useState(colorPalettes.aurora.surface);
+	const [themeColorCustomized, setThemeColorCustomized] = useState(false);
 	const [selectedFont, setSelectedFont] = useState(fontOptions[0]);
 	const [selectedProjectType, setSelectedProjectType] = useState<ProjectType>('docs');
 	const [selectedFormat, setSelectedFormat] = useState<FormatType>('markdown');
@@ -208,6 +210,41 @@ export default function MarkdownWorkbench() {
 	const projectMeta = projectLabelMap[selectedProjectType];
 	const themeLabel = themeModes.find((item) => item.value === selectedTheme) ?? themeModes[0];
 	const selectedAccentSoft = selectedTheme === 'dark' ? hexToRgba(selectedAccent, 0.18) : hexToRgba(selectedAccent, 0.12);
+
+	const normalizeHexColor = (value: string, fallback: string) => /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value) ? value : fallback;
+
+	const getReadableTextColor = (hex: string) => {
+		const normalizedHex = hex.replace('#', '');
+		const expandedHex = normalizedHex.length === 3
+			? normalizedHex.split('').map((character) => character + character).join('')
+			: normalizedHex;
+		const parsed = Number.parseInt(expandedHex, 16);
+		const red = (parsed >> 16) & 255;
+		const green = (parsed >> 8) & 255;
+		const blue = parsed & 255;
+		const luminance = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+		return luminance > 0.62 ? '#0f172a' : '#f8fafc';
+	};
+
+	const selectedThemeTextColor = getReadableTextColor(selectedThemeColor);
+
+	useEffect(() => {
+		if (themeColorCustomized) {
+			return;
+		}
+
+		// Use a slightly darker default background for dark mode to improve depth
+		setSelectedThemeColor(selectedTheme === 'dark' ? '#020617' : '#f8fafc');
+	}, [selectedTheme, selectedPalette, themeColorCustomized]);
+
+	// If the user switches between dark/light mode, reset any custom theme color
+	// so the canvas uses the appropriate default surface for the selected mode.
+	useEffect(() => {
+		if (themeColorCustomized) {
+			setThemeColorCustomized(false);
+			setSelectedThemeColor(selectedTheme === 'dark' ? '#020617' : '#f8fafc');
+		}
+	}, [selectedTheme]);
 	
 	// Generate complete DESIGN.md file
 	const generatedDesignMD = useMemo(() => {
@@ -243,6 +280,7 @@ description: |
 colors:
   primary: "${palette.primary}"
   accent: "${palette.accent}"
+	theme-surface: "${selectedThemeColor}"
   surface-dark: "#020617"
   surface-light: "#f8fafc"
   text-dark: "#f8fafc"
@@ -314,6 +352,7 @@ This design system is tailored for **${projectMeta.title}** with a focus on **${
 
 The system is built around:
 - **Color Palette:** ${palette.name} theme with primary accent at \`${palette.primary}\`
+- **Theme Surface:** \`${selectedThemeColor}\` as the editable workbench background
 - **Typography:** ${selectedFont.label} as the primary typeface
 - **Format:** ${formatLabelMap[selectedFormat]}
 - **Theme Mode:** ${themeModes.find(t => t.value === selectedTheme)?.label} mode
@@ -435,16 +474,18 @@ ${notesBlock || '- No additional notes yet'}
 
 **Generated for:** ${selectedProjectType} • **Format:** ${formatLabelMap[selectedFormat]} • **Theme:** ${themeModes.find(t => t.value === selectedTheme)?.label} • **Palette:** ${palette.name}
 `;
-	}, [documentName, documentSummary, implementationNotes, selectedProjectType, selectedTheme, selectedFormat, selectedFont.label, selectedPalette, spacingTokens, radiusTokens, componentTokens]);
+	}, [documentName, documentSummary, implementationNotes, selectedProjectType, selectedTheme, selectedFormat, selectedFont.label, selectedPalette, selectedThemeColor, spacingTokens, radiusTokens, componentTokens]);
 	
 	const generatedDocument = generatedDesignMD;
 
 	const previewHtml = useMemo(() => markdownToHtml(selectedMarkdown), [selectedMarkdown]);
 
 	const themeStyles: CSSProperties = {
-		background: selectedTheme === 'dark' ? '#020617' : '#f8fafc',
-		color: selectedTheme === 'dark' ? '#f8fafc' : '#0f172a',
-		borderColor: selectedTheme === 'dark' ? 'rgba(148, 163, 184, 0.18)' : 'rgba(15, 23, 42, 0.12)',
+		background: selectedThemeColor,
+		color: selectedThemeTextColor,
+		borderColor: selectedTheme === 'light' ? 'rgba(15, 23, 42, 0.12)' : 'rgba(148, 163, 184, 0.22)',
+		'--muted-text': selectedTheme === 'light' ? '#334155' : '#94a3b8',
+		'--border-subtle': selectedTheme === 'light' ? 'rgba(15, 23, 42, 0.12)' : 'rgba(148, 163, 184, 0.22)',
 		'--accent': selectedAccent,
 		'--accent-soft': selectedAccentSoft,
 	} as CSSProperties;
@@ -511,6 +552,7 @@ ${notesBlock || '- No additional notes yet'}
 			<WorkbenchAppearancePanel
 				selectedTheme={selectedTheme}
 				selectedPalette={selectedPalette}
+				selectedThemeColor={normalizeHexColor(selectedThemeColor, colorPalettes[selectedPalette].surface)}
 				selectedAccent={selectedAccent}
 				selectedFont={selectedFont}
 				fontDropdownOpen={fontDropdownOpen}
@@ -519,6 +561,12 @@ ${notesBlock || '- No additional notes yet'}
 				onSelectPalette={(paletteKey) => {
 					setSelectedPalette(paletteKey);
 					setSelectedAccent(colorPalettes[paletteKey].accent);
+					setThemeColorCustomized(false);
+					setSelectedThemeColor(selectedTheme === 'dark' ? colorPalettes[paletteKey].surface : '#f8fafc');
+				}}
+				onSelectThemeColor={(color) => {
+					setThemeColorCustomized(true);
+					setSelectedThemeColor(normalizeHexColor(color, colorPalettes[selectedPalette].surface));
 				}}
 				onSelectAccent={setSelectedAccent}
 				onToggleFontDropdown={() => setFontDropdownOpen(!fontDropdownOpen)}
@@ -569,6 +617,7 @@ ${notesBlock || '- No additional notes yet'}
 
 				<WorkbenchPreviewPanel
 					selectedAccent={selectedAccent}
+					selectedThemeColor={selectedThemeColor}
 					selectedFont={selectedFont}
 					selectedProjectType={selectedProjectType}
 					selectedFormat={selectedFormat}

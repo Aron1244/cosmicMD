@@ -4,12 +4,14 @@ import type { ColorPalette, FontOption, PaletteType, ThemeType } from './data';
 type WorkbenchAppearancePanelProps = {
 	selectedTheme: ThemeType;
 	selectedPalette: PaletteType;
+	selectedThemeColor: string;
 	selectedAccent: string;
 	selectedFont: FontOption;
 	fontDropdownOpen: boolean;
 	colorPalettes: Record<PaletteType, ColorPalette>;
 	fontOptions: FontOption[];
 	onSelectPalette: (paletteKey: PaletteType) => void;
+	onSelectThemeColor: (color: string) => void;
 	onSelectAccent: (accent: string) => void;
 	onToggleFontDropdown: () => void;
 	onSelectFont: (font: FontOption) => void;
@@ -18,20 +20,22 @@ type WorkbenchAppearancePanelProps = {
 export default function WorkbenchAppearancePanel({
 	selectedTheme,
 	selectedPalette,
+	selectedThemeColor,
 	selectedAccent,
 	selectedFont,
 	fontDropdownOpen,
 	colorPalettes,
 	fontOptions,
 	onSelectPalette,
+	onSelectThemeColor,
 	onSelectAccent,
 	onToggleFontDropdown,
 	onSelectFont,
 }: WorkbenchAppearancePanelProps) {
 	return (
-		<div className="mt-6 grid gap-4 rounded-3xl border border-current/10 bg-current/5 p-4 lg:grid-cols-[1fr_1fr] lg:items-start">
+		<div className="mt-6 grid gap-4 rounded-3xl border border-(--border-subtle) bg-current/5 p-4 lg:grid-cols-[1fr_1fr] lg:items-start">
 			<div>
-				<p className="text-xs uppercase tracking-[0.3em] text-slate-400">Color palette</p>
+				<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Color palette</p>
 				<p className="text-sm font-semibold">Select a pre-built palette or customize colors.</p>
 				<div className="mt-3 flex flex-wrap gap-2">
 					{(Object.entries(colorPalettes) as [PaletteType, ColorPalette][]).map(([key, palette]) => {
@@ -62,10 +66,32 @@ export default function WorkbenchAppearancePanel({
 			</div>
 
 			<div>
-				<p className="text-xs uppercase tracking-[0.3em] text-slate-400">Accent color</p>
+				<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Theme color</p>
+				<p className="text-sm font-semibold">Pick the base surface color of the workbench.</p>
+				<div className="mt-3 flex items-center gap-3">
+					<label className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-2xl border border-current/10 bg-current/5 shadow-sm transition">
+						<span className="sr-only">Choose theme color</span>
+						<input
+							type="color"
+							value={selectedThemeColor}
+							onChange={(event) => onSelectThemeColor(event.target.value)}
+							className="h-11 w-11 cursor-pointer rounded-lg border-0 bg-transparent p-0"
+						/>
+					</label>
+					<input
+						type="text"
+						value={selectedThemeColor}
+						onChange={(event) => onSelectThemeColor(event.target.value)}
+						className="h-14 flex-1 rounded-2xl border border-current/10 bg-transparent px-4 font-mono text-sm uppercase tracking-[0.18em] outline-none transition"
+					/>
+				</div>
+			</div>
+
+			<div>
+				<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Accent color</p>
 				<p className="text-sm font-semibold">Fine-tune the accent shade.</p>
 				<div className="mt-3 flex items-center gap-3">
-						<label className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-2xl border border-current/10 bg-current/5 shadow-sm transition">
+					<label className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-2xl border border-current/10 bg-current/5 shadow-sm transition">
 						<span className="sr-only">Choose accent color</span>
 						<input
 							type="color"
@@ -84,7 +110,7 @@ export default function WorkbenchAppearancePanel({
 			</div>
 
 			<div className="lg:col-span-2">
-				<p className="text-xs uppercase tracking-[0.3em] text-slate-400">Google Fonts</p>
+				<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Google Fonts</p>
 				<p className="text-sm font-semibold">Choose your primary typeface from 100+ fonts.</p>
 				<FontDropdown
 					selectedFont={selectedFont}

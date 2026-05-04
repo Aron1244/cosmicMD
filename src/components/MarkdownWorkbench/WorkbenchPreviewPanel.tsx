@@ -3,6 +3,7 @@ import type { FontOption, FormatType, ProjectType } from './data';
 
 type WorkbenchPreviewPanelProps = {
 	selectedAccent: string;
+	selectedThemeColor: string;
 	selectedFont: FontOption;
 	selectedProjectType: ProjectType;
 	selectedFormat: FormatType;
@@ -15,6 +16,7 @@ type WorkbenchPreviewPanelProps = {
 
 export default function WorkbenchPreviewPanel({
 	selectedAccent,
+	selectedThemeColor,
 	selectedFont,
 	selectedProjectType,
 	selectedFormat,
@@ -25,36 +27,40 @@ export default function WorkbenchPreviewPanel({
 	selectedAccentSoft,
 }: WorkbenchPreviewPanelProps) {
 	return (
-		<div className="rounded-4xl border border-current/10 bg-current/5 p-5">
+		<div className="rounded-4xl border border-(--border-subtle) bg-current/5 p-5">
 			<div className="flex items-center justify-between gap-4">
 				<div>
 					<p className="text-xs uppercase tracking-[0.35em] text-(--accent)">Live preview</p>
 					<h3 className="mt-2 text-2xl font-black sm:text-3xl">{projectMeta.title}</h3>
 				</div>
-				<div className="rounded-full border border-current/10 px-3 py-1 text-xs font-semibold">{selectedFormat}</div>
+				<div className="rounded-full border border-(--border-subtle) px-3 py-1 text-xs font-semibold">{selectedFormat}</div>
 			</div>
 
 			<div className="mt-4 grid gap-3 sm:grid-cols-4">
-				<div className="rounded-2xl border border-current/10 bg-current/5 p-4">
-					<p className="text-xs uppercase tracking-[0.28em] text-slate-400">Theme</p>
+				<div className="rounded-2xl border border-(--border-subtle) bg-current/5 p-4">
+					<p className="text-xs uppercase tracking-[0.28em] text-(--muted-text)">Theme</p>
 					<p className="mt-2 text-sm font-semibold">{themeLabel.label}</p>
 				</div>
-				<div className="rounded-2xl border border-current/10 bg-current/5 p-4">
-					<p className="text-xs uppercase tracking-[0.28em] text-slate-400">Accent</p>
+				<div className="rounded-2xl border border-(--border-subtle) bg-current/5 p-4">
+					<p className="text-xs uppercase tracking-[0.28em] text-(--muted-text)">Surface</p>
+					<p className="mt-2 text-sm font-semibold">{selectedThemeColor.toUpperCase()}</p>
+				</div>
+				<div className="rounded-2xl border border-(--border-subtle) bg-current/5 p-4">
+					<p className="text-xs uppercase tracking-[0.28em] text-(--muted-text)">Accent</p>
 					<p className="mt-2 text-sm font-semibold">{selectedAccent.toUpperCase()}</p>
 				</div>
-				<div className="rounded-2xl border border-current/10 bg-current/5 p-4">
-					<p className="text-xs uppercase tracking-[0.28em] text-slate-400">Font</p>
+				<div className="rounded-2xl border border-(--border-subtle) bg-current/5 p-4">
+					<p className="text-xs uppercase tracking-[0.28em] text-(--muted-text)">Font</p>
 					<p className="mt-2 text-sm font-semibold">{selectedFont.label}</p>
 				</div>
-				<div className="rounded-2xl border border-current/10 bg-current/5 p-4">
-					<p className="text-xs uppercase tracking-[0.28em] text-slate-400">Project</p>
+				<div className="rounded-2xl border border-(--border-subtle) bg-current/5 p-4">
+					<p className="text-xs uppercase tracking-[0.28em] text-(--muted-text)">Project</p>
 					<p className="mt-2 text-sm font-semibold">{selectedProjectType}</p>
 				</div>
 			</div>
 
 			<article
-				className="mt-5 max-w-none rounded-3xl border border-current/10 bg-current/5 p-6"
+				className="mt-5 max-w-none rounded-3xl border border-(--border-subtle) bg-current/5 p-6"
 				style={{
 					fontFamily: selectedFont.stack,
 					'--accent-color': selectedAccent,
@@ -67,8 +73,8 @@ export default function WorkbenchPreviewPanel({
 				/>
 			</article>
 
-			<div className="mt-4 rounded-2xl border border-current/10 bg-current/5 p-4 font-mono text-xs leading-6">
-				<p className="mb-2 uppercase tracking-[0.28em] text-slate-400">Generated file</p>
+			<div className="mt-4 rounded-2xl border border-(--border-subtle) bg-current/5 p-4 font-mono text-xs leading-6">
+				<p className="mb-2 uppercase tracking-[0.28em] text-(--muted-text)">Generated file</p>
 				<pre className="overflow-x-auto whitespace-pre-wrap">{generatedDocument}</pre>
 			</div>
 		</div>

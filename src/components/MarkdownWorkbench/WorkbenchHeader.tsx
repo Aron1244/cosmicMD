@@ -14,7 +14,7 @@ export default function WorkbenchHeader({ selectedTheme, themeModes, onSelectThe
 					Design system generator
 				</p>
 				<h2 className="text-3xl font-black tracking-tight sm:text-4xl">Create a custom DESIGN.md for your project</h2>
-				<p className="max-w-2xl text-sm leading-6" style={{ color: selectedTheme === 'dark' ? '#cbd5e1' : '#475569' }}>
+				<p className="max-w-2xl text-sm leading-6" style={{ color: 'var(--muted-text)' }}>
 					Personalize your design system: choose colors, typography, spacing, and components. Download a ready-to-use DESIGN.md file with everything you selected.
 				</p>
 			</div>

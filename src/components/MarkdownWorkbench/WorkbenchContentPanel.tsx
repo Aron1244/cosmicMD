@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ComponentTokens, FontOption, FormatType, ProjectType, RadiusTokens, SpacingTokens, ThemeType } from './data';
+import type { ComponentTokens, ButtonTokenSet, CardTokenSet, FontOption, FormatType, ProjectType, RadiusTokens, SpacingTokens, ThemeType } from './data';
 
 type WorkbenchContentPanelProps = {
 	selectedTheme: ThemeType;
@@ -60,7 +60,7 @@ export default function WorkbenchContentPanel({
 	onDownload,
 	onCopy,
 }: WorkbenchContentPanelProps) {
-	const [openRoundedMenu, setOpenRoundedMenu] = useState<'buttonPrimary' | 'buttonSecondary' | null>(null);
+	const [openRoundedMenu, setOpenRoundedMenu] = useState<'buttonPrimary' | 'buttonSecondary' | 'cardDefault' | null>(null);
 
 	const buttonPaddingOptions = [
 		'8px 16px',
@@ -111,6 +111,7 @@ export default function WorkbenchContentPanel({
 	const normalizePxValue = (value: number) => `${Math.max(0, Math.round(value))}px`;
 
 	const parseColorValue = (value: string, fallback: string) => /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value) ? value : fallback;
+	const sliderTrackClass = selectedTheme === 'dark' ? 'bg-white/10' : 'bg-slate-400/30';
 
 	const getPaddingOptionIndex = (value: string) => {
 		const index = buttonPaddingOptions.indexOf(value as (typeof buttonPaddingOptions)[number]);
@@ -148,7 +149,7 @@ export default function WorkbenchContentPanel({
 	};
 
 	const getButtonPreviewStyles = (sectionKey: 'buttonPrimary' | 'buttonSecondary') => {
-		const section = componentTokens[sectionKey];
+		const section = componentTokens[sectionKey] as ButtonTokenSet;
 		const isPrimary = sectionKey === 'buttonPrimary';
 		const padding = section.padding;
 		const borderRadius = resolveRoundedToken(section.rounded);
@@ -163,7 +164,7 @@ export default function WorkbenchContentPanel({
 	};
 
 	const getCardPreviewStyles = () => {
-		const section = componentTokens.cardDefault;
+		const section = componentTokens.cardDefault as CardTokenSet;
 		return {
 			backgroundColor: parseColorValue(section.backgroundColor, 'rgba(255, 255, 255, 0.04)'),
 			borderRadius: resolveRoundedToken(section.borderRadius),
@@ -173,9 +174,9 @@ export default function WorkbenchContentPanel({
 	};
 
 	return (
-		<div className="space-y-5 rounded-4xl border border-current/10 bg-current/5 p-5">
-			<div className="rounded-3xl border border-current/10 bg-current/5 p-4">
-				<p className="text-xs uppercase tracking-[0.3em] text-slate-400">Document details</p>
+		<div className="space-y-5 rounded-4xl border border-(--border-subtle) bg-current/5 p-5">
+			<div className="rounded-3xl border border-(--border-subtle) bg-current/5 p-4">
+				<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Document details</p>
 				<div className="mt-3 grid gap-3">
 					<input
 						type="text"
@@ -199,20 +200,20 @@ export default function WorkbenchContentPanel({
 				</div>
 			</div>
 
-			<div className="rounded-3xl border border-current/10 bg-current/5 p-4">
-				<p className="text-xs uppercase tracking-[0.3em] text-slate-400">Token blocks</p>
+			<div className="rounded-3xl border border-(--border-subtle) bg-current/5 p-4">
+				<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Token blocks</p>
 				<div className="mt-4 space-y-4">
 					<div>
-						<p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-400">Spacing</p>
+						<p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-(--muted-text)">Spacing</p>
 						<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
 							{spacingFields.map(([key, label, min, max]) => {
 								const value = readPxValue(spacingTokens[key]);
 								const percent = max === min ? 0 : ((value - min) / (max - min)) * 100;
 								return (
-									<div key={key} className="overflow-hidden rounded-2xl border border-current/10 bg-black/5 p-3">
+									<div key={key} className="overflow-hidden rounded-2xl border border-(--border-subtle) bg-black/5 p-3">
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{label}</span>
-											<span className="rounded-full border border-current/10 bg-current/5 px-2 py-1 font-mono text-[11px]">{spacingTokens[key]}</span>
+											<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">{label}</span>
+											<span className="rounded-full border border-(--border-subtle) bg-current/5 px-2 py-1 font-mono text-[11px]">{spacingTokens[key]}</span>
 										</div>
 										<div className="mt-3 space-y-3">
 											<input
@@ -221,23 +222,23 @@ export default function WorkbenchContentPanel({
 												max={String(max)}
 												value={String(value)}
 												onChange={(event) => onChangeSpacingToken(key, normalizePxValue(Number(event.target.value)))}
-												className="h-2 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-(--accent)"
+												className={`h-2 w-full cursor-pointer appearance-none rounded-full accent-(--accent) ${sliderTrackClass}`}
 											/>
-											<div className="space-y-2 rounded-xl border border-current/10 bg-current/5 p-3">
-												<div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Preview</div>
-													<div className="flex items-center gap-3 overflow-hidden rounded-xl border border-dashed border-current/10 p-3">
+											<div className="space-y-2 rounded-xl border border-(--border-subtle) bg-current/5 p-3">
+												<div className="text-[11px] uppercase tracking-[0.2em] text-(--muted-text)">Preview</div>
+												<div className="flex items-center gap-3 overflow-hidden rounded-xl border border-dashed border-(--border-subtle) p-3">
 														<div className="h-3 w-3 rounded-full" style={{ backgroundColor: 'var(--accent)' }}></div>
 														<div className="rounded-full" style={{ width: `${Math.max(12, value)}px`, height: '10px', backgroundColor: 'var(--accent)' }}></div>
-													<div className="text-xs text-slate-400">{percent > 0 ? `${Math.round(percent)}%` : '0%'}</div>
+													<div className="text-xs text-(--muted-text)">{percent > 0 ? `${Math.round(percent)}%` : '0%'}</div>
 												</div>
 											</div>
 											<label className="grid gap-1">
-												<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Value</span>
+												<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">Value</span>
 												<input
 													type="text"
 													value={spacingTokens[key]}
 													onChange={(event) => onChangeSpacingToken(key, event.target.value)}
-													className="block h-11 w-full min-w-0 box-border rounded-2xl border border-current/10 bg-transparent px-4 font-mono text-sm outline-none transition"
+													className="block h-11 w-full min-w-0 box-border rounded-2xl border border-(--border-subtle) bg-transparent px-4 font-mono text-sm outline-none transition"
 													style={{ color: selectedTheme === 'dark' ? '#f8fafc' : '#0f172a' }}
 												/>
 											</label>
@@ -249,16 +250,16 @@ export default function WorkbenchContentPanel({
 					</div>
 
 					<div>
-						<p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-400">Radius</p>
+						<p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-(--muted-text)">Radius</p>
 						<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
 							{radiusFields.map(([key, label, min, max]) => {
 								const value = readPxValue(radiusTokens[key]);
 								const previewRadius = key === 'full' ? '9999px' : `${Math.max(0, Math.min(max, value))}px`;
 								return (
-									<div key={key} className="overflow-hidden rounded-2xl border border-current/10 bg-black/5 p-3">
+									<div key={key} className="overflow-hidden rounded-2xl border border-(--border-subtle) bg-black/5 p-3">
 										<div className="flex items-center justify-between gap-3">
-											<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{label}</span>
-											<span className="rounded-full border border-current/10 bg-current/5 px-2 py-1 font-mono text-[11px]">{radiusTokens[key]}</span>
+											<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">{label}</span>
+											<span className="rounded-full border border-(--border-subtle) bg-current/5 px-2 py-1 font-mono text-[11px]">{radiusTokens[key]}</span>
 										</div>
 										<div className="mt-3 space-y-3">
 											<input
@@ -267,21 +268,21 @@ export default function WorkbenchContentPanel({
 												max={String(max)}
 												value={String(value)}
 												onChange={(event) => onChangeRadiusToken(key, normalizePxValue(Number(event.target.value)))}
-												className="h-2 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-(--accent)"
+												className={`h-2 w-full cursor-pointer appearance-none rounded-full accent-(--accent) ${sliderTrackClass}`}
 											/>
-											<div className="space-y-2 rounded-xl border border-current/10 bg-current/5 p-3">
-												<div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Preview</div>
-													<div className="flex items-center justify-center rounded-xl border border-dashed border-current/10 p-4">
+											<div className="space-y-2 rounded-xl border border-(--border-subtle) bg-current/5 p-3">
+												<div className="text-[11px] uppercase tracking-[0.2em] text-(--muted-text)">Preview</div>
+												<div className="flex items-center justify-center rounded-xl border border-dashed border-(--border-subtle) p-4">
 														<div className="h-14 w-14" style={{ borderRadius: previewRadius, backgroundColor: 'var(--accent)' }}></div>
 												</div>
 											</div>
 											<label className="grid gap-1">
-												<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Value</span>
+												<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">Value</span>
 												<input
 													type="text"
 													value={radiusTokens[key]}
 													onChange={(event) => onChangeRadiusToken(key, event.target.value)}
-													className="block h-11 w-full min-w-0 box-border rounded-2xl border border-current/10 bg-transparent px-4 font-mono text-sm outline-none transition"
+													className="block h-11 w-full min-w-0 box-border rounded-2xl border border-(--border-subtle) bg-transparent px-4 font-mono text-sm outline-none transition"
 													style={{ color: selectedTheme === 'dark' ? '#f8fafc' : '#0f172a' }}
 												/>
 											</label>
@@ -293,7 +294,7 @@ export default function WorkbenchContentPanel({
 					</div>
 
 					<div>
-						<p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-slate-400">Components</p>
+						<p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-(--muted-text)">Components</p>
 						<div className="space-y-4">
 							{(
 								[
@@ -305,41 +306,43 @@ export default function WorkbenchContentPanel({
 								const section = componentTokens[sectionKey];
 								const isButtonSection = sectionKey === 'buttonPrimary' || sectionKey === 'buttonSecondary';
 								const isCardSection = sectionKey === 'cardDefault';
+								const btn = section as ButtonTokenSet;
+								const card = section as CardTokenSet;
 								return (
 									<div key={sectionKey} className="rounded-2xl border border-current/10 bg-black/5 p-4">
-										<p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">{sectionLabel}</p>
+										<p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-(--muted-text)">{sectionLabel}</p>
 										{isButtonSection ? (
 											<div className="space-y-4">
 												<div className="grid gap-3 sm:grid-cols-2">
 													<label className="grid gap-2">
-														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">backgroundColor</span>
+														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">backgroundColor</span>
 														<div className="flex items-center gap-3 rounded-2xl border border-current/10 bg-current/5 px-3 py-2">
 															<input
 																type="color"
-																value={parseColorValue(section.backgroundColor, sectionKey === 'buttonPrimary' ? '#22d3ee' : '#1f2937')}
+																value={parseColorValue(btn.backgroundColor, sectionKey === 'buttonPrimary' ? '#22d3ee' : '#1f2937')}
 																onChange={(event) => onChangeComponentToken(sectionKey, 'backgroundColor', event.target.value)}
 																className="h-10 w-12 cursor-pointer rounded-xl border border-current/10 bg-transparent p-1"
 															/>
-															<span className="min-w-0 flex-1 font-mono text-sm">{section.backgroundColor}</span>
+															<span className="min-w-0 flex-1 font-mono text-sm">{btn.backgroundColor}</span>
 														</div>
 													</label>
 													<label className="grid gap-2">
-														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">textColor</span>
+														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">textColor</span>
 														<div className="flex items-center gap-3 rounded-2xl border border-current/10 bg-current/5 px-3 py-2">
 															<input
 																type="color"
-																value={parseColorValue(section.textColor, sectionKey === 'buttonPrimary' ? '#020617' : '#f8fafc')}
+																value={parseColorValue(btn.textColor, sectionKey === 'buttonPrimary' ? '#020617' : '#f8fafc')}
 																onChange={(event) => onChangeComponentToken(sectionKey, 'textColor', event.target.value)}
 																className="h-10 w-12 cursor-pointer rounded-xl border border-current/10 bg-transparent p-1"
 															/>
-															<span className="min-w-0 flex-1 font-mono text-sm">{section.textColor}</span>
+															<span className="min-w-0 flex-1 font-mono text-sm">{btn.textColor}</span>
 														</div>
 													</label>
 												</div>
 
 												<div className="grid gap-3 sm:grid-cols-2">
 													<label className="grid gap-2">
-														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">rounded</span>
+														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">rounded</span>
 														<div className="relative">
 															<button
 																type="button"
@@ -347,13 +350,13 @@ export default function WorkbenchContentPanel({
 																className="flex h-11 w-full items-center justify-between gap-3 rounded-2xl border border-current/10 bg-current/5 px-4 text-sm transition hover:bg-current/10"
 																style={{ color: selectedTheme === 'dark' ? '#f8fafc' : '#0f172a' }}
 															>
-																<span>{getRoundedOptionLabel(section.rounded)}</span>
-																<span className="text-xs uppercase tracking-[0.2em] text-slate-400">Menu</span>
+																<span>{getRoundedOptionLabel(btn.rounded)}</span>
+																<span className="text-xs uppercase tracking-[0.2em] text-(--muted-text)">Menu</span>
 															</button>
 															{openRoundedMenu === sectionKey ? (
 																<div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-2xl border border-current/10 bg-[#0b1120] shadow-2xl shadow-slate-950/40">
 																	{roundedOptions.map((option) => {
-																		const active = option.value === getRoundedOptionValue(section.rounded);
+																		const active = option.value === getRoundedOptionValue(btn.rounded);
 																		return (
 																			<button
 																				key={option.value}
@@ -375,51 +378,51 @@ export default function WorkbenchContentPanel({
 														</div>
 													</label>
 													<label className="grid gap-2">
-														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">height</span>
+														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">height</span>
 														<div className="rounded-2xl border border-current/10 bg-current/5 p-3">
 															<div className="mb-2 flex items-center justify-between gap-3">
-																<span className="font-mono text-[11px] text-slate-400">{section.height ?? '44px'}</span>
-																<span className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Preview height</span>
+																<span className="font-mono text-[11px] text-(--muted-text)">{btn.height ?? '44px'}</span>
+																<span className="text-[11px] uppercase tracking-[0.2em] text-(--muted-text)">Preview height</span>
 															</div>
 															<input
 																type="range"
 																min="36"
 																max="60"
 																step="1"
-																value={readPxValue(section.height ?? '44px')}
+																value={readPxValue(btn.height ?? '44px')}
 																onChange={(event) => onChangeComponentToken(sectionKey, 'height', normalizePxValue(Number(event.target.value)))}
-																className="h-2 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-(--accent)"
+																className={`h-2 w-full cursor-pointer appearance-none rounded-full accent-(--accent) ${sliderTrackClass}`}
 															/>
 														</div>
 													</label>
 												</div>
 
 												<div className="rounded-2xl border border-current/10 bg-current/5 p-3">
-													<div className="mb-2 text-[11px] uppercase tracking-[0.2em] text-slate-400">Padding</div>
+													<div className="mb-2 text-[11px] uppercase tracking-[0.2em] text-(--muted-text)">Padding</div>
 													<div className="space-y-3 rounded-xl border border-dashed border-current/10 p-3">
 														<input
 															type="range"
 															min="0"
 															max={String(buttonPaddingOptions.length - 1)}
 															step="1"
-															value={String(getPaddingOptionIndex(section.padding))}
+																value={String(getPaddingOptionIndex(btn.padding))}
 															onChange={(event) => onChangeComponentToken(sectionKey, 'padding', buttonPaddingOptions[Number(event.target.value)])}
-															className="h-2 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-(--accent)"
+															className={`h-2 w-full cursor-pointer appearance-none rounded-full accent-(--accent) ${sliderTrackClass}`}
 														/>
-														<div className="flex items-center justify-between gap-3 text-[11px] text-slate-400">
-															<span>{section.padding}</span>
-															<span>{buttonPaddingOptions[getPaddingOptionIndex(section.padding)]}</span>
-														</div>
+                                                            <div className="flex items-center justify-between gap-3 text-[11px] text-(--muted-text)">
+                                                            	<span>{btn.padding}</span>
+                                                            	<span>{buttonPaddingOptions[getPaddingOptionIndex(btn.padding)]}</span>
+                                                        	</div>
 													</div>
 												</div>
 
 												<div className="mt-4 space-y-2 rounded-2xl border border-current/10 bg-current/5 p-3">
-													<div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Preview</div>
+													<div className="text-[11px] uppercase tracking-[0.2em] text-(--muted-text)">Preview</div>
 													<div className="flex flex-col gap-3 sm:flex-row">
 														<button type="button" className="flex items-center justify-center gap-2 font-semibold transition" style={getButtonPreviewStyles(sectionKey)}>
 															<span>{sectionKey === 'buttonPrimary' ? 'Primary action' : 'Secondary action'}</span>
 														</button>
-														<div className="flex min-w-0 flex-1 items-center rounded-2xl border border-dashed border-current/10 px-4 py-3 text-xs text-slate-400">
+														<div className="flex min-w-0 flex-1 items-center rounded-2xl border border-dashed border-current/10 px-4 py-3 text-xs text-(--muted-text)">
 															{sectionKey === 'buttonPrimary'
 																? 'Accent-driven CTA with the configured padding, height and radius.'
 																: 'Neutral button with the same geometry to compare contrast and weight.'}
@@ -431,22 +434,22 @@ export default function WorkbenchContentPanel({
 											<div className="space-y-4">
 												<div className="grid gap-3 sm:grid-cols-2">
 													<label className="grid gap-2">
-														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">backgroundColor</span>
+														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">backgroundColor</span>
 														<div className="flex items-center gap-3 rounded-2xl border border-current/10 bg-current/5 px-3 py-2">
 															<input
 																type="color"
-																value={parseColorValue(section.backgroundColor, '#111827')}
+																value={parseColorValue(card.backgroundColor, '#111827')}
 																onChange={(event) => onChangeComponentToken(sectionKey, 'backgroundColor', event.target.value)}
 																className="h-10 w-12 cursor-pointer rounded-xl border border-current/10 bg-transparent p-1"
 															/>
-															<span className="min-w-0 flex-1 font-mono text-sm">{section.backgroundColor}</span>
+															<span className="min-w-0 flex-1 font-mono text-sm">{card.backgroundColor}</span>
 														</div>
 													</label>
 													<label className="grid gap-2">
-														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">border</span>
+														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">border</span>
 														<input
 															type="text"
-															value={section.border}
+															value={card.border}
 															onChange={(event) => onChangeComponentToken(sectionKey, 'border', event.target.value)}
 															className="h-11 rounded-2xl border border-current/10 bg-transparent px-4 font-mono text-sm outline-none transition"
 															style={{ color: selectedTheme === 'dark' ? '#f8fafc' : '#0f172a' }}
@@ -456,7 +459,7 @@ export default function WorkbenchContentPanel({
 
 												<div className="grid gap-3 sm:grid-cols-2">
 													<label className="grid gap-2">
-														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">borderRadius</span>
+														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">borderRadius</span>
 														<div className="relative">
 															<button
 																type="button"
@@ -464,13 +467,13 @@ export default function WorkbenchContentPanel({
 																className="flex h-11 w-full items-center justify-between gap-3 rounded-2xl border border-current/10 bg-current/5 px-4 text-sm transition hover:bg-current/10"
 																style={{ color: selectedTheme === 'dark' ? '#f8fafc' : '#0f172a' }}
 															>
-																<span>{getRoundedOptionLabel(section.borderRadius)}</span>
-																<span className="text-xs uppercase tracking-[0.2em] text-slate-400">Menu</span>
+																<span>{getRoundedOptionLabel(card.borderRadius)}</span>
+																<span className="text-xs uppercase tracking-[0.2em] text-(--muted-text)">Menu</span>
 															</button>
 															{openRoundedMenu === sectionKey ? (
 																<div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-2xl border border-current/10 bg-[#0b1120] shadow-2xl shadow-slate-950/40">
 																	{roundedOptions.map((option) => {
-																		const active = option.value === getRoundedOptionValue(section.borderRadius);
+																		const active = option.value === getRoundedOptionValue(card.borderRadius);
 																		return (
 																			<button
 																				key={option.value}
@@ -492,27 +495,27 @@ export default function WorkbenchContentPanel({
 														</div>
 													</label>
 													<label className="grid gap-2">
-														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">padding</span>
+														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">padding</span>
 														<div className="rounded-2xl border border-current/10 bg-current/5 p-3">
 															<div className="mb-2 flex items-center justify-between gap-3">
-																<span className="font-mono text-[11px] text-slate-400">{section.padding}</span>
-																<span className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Scale</span>
+																<span className="font-mono text-[11px] text-(--muted-text)">{card.padding}</span>
+																<span className="text-[11px] uppercase tracking-[0.2em] text-(--muted-text)">Scale</span>
 															</div>
 															<input
 																type="range"
 																min="0"
 																max={String(buttonPaddingOptions.length - 1)}
 																step="1"
-																value={String(getPaddingOptionIndex(section.padding))}
+																value={String(getPaddingOptionIndex(card.padding))}
 																onChange={(event) => onChangeComponentToken(sectionKey, 'padding', buttonPaddingOptions[Number(event.target.value)])}
-																className="h-2 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-(--accent)"
+																className={`h-2 w-full cursor-pointer appearance-none rounded-full accent-(--accent) ${sliderTrackClass}`}
 															/>
 														</div>
 													</label>
 												</div>
 
 												<div className="mt-4 space-y-2 rounded-2xl border border-current/10 bg-current/5 p-3">
-													<div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Preview</div>
+													<div className="text-[11px] uppercase tracking-[0.2em] text-(--muted-text)">Preview</div>
 													<div className="rounded-2xl border border-dashed border-current/10 p-4">
 														<div className="space-y-3" style={getCardPreviewStyles()}>
 															<div className="flex items-start justify-between gap-3">
@@ -523,8 +526,8 @@ export default function WorkbenchContentPanel({
 																<span className="rounded-full px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ backgroundColor: 'var(--accent-soft)', color: 'var(--accent)' }}>Live</span>
 															</div>
 															<div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300">
-																<span className="rounded-full border border-current/10 bg-white/5 px-3 py-1">Padding {resolveSpacingToken(section.padding)}</span>
-																<span className="rounded-full border border-current/10 bg-white/5 px-3 py-1">Radius {getRoundedOptionLabel(section.borderRadius)}</span>
+																<span className="rounded-full border border-current/10 bg-white/5 px-3 py-1">Padding {resolveSpacingToken(card.padding)}</span>
+																<span className="rounded-full border border-current/10 bg-white/5 px-3 py-1">Radius {getRoundedOptionLabel(card.borderRadius)}</span>
 															</div>
 														</div>
 													</div>
@@ -534,7 +537,7 @@ export default function WorkbenchContentPanel({
 											<div className="grid gap-3 sm:grid-cols-2">
 												{Object.entries(section).map(([propertyKey, value]) => (
 													<label key={propertyKey} className="grid gap-1">
-														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{propertyKey}</span>
+														<span className="text-xs font-semibold uppercase tracking-[0.18em] text-(--muted-text)">{propertyKey}</span>
 														<input
 															type="text"
 															value={value}
@@ -555,7 +558,7 @@ export default function WorkbenchContentPanel({
 			</div>
 
 			<div>
-				<p className="text-xs uppercase tracking-[0.3em] text-slate-400">Project type</p>
+				<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Project type</p>
 				<div className="mt-3 flex flex-wrap gap-3">
 					{projectTypes.map((projectType) => {
 						const active = selectedProjectType === projectType.value;
@@ -586,7 +589,7 @@ export default function WorkbenchContentPanel({
 			</div>
 
 			<div>
-				<p className="text-xs uppercase tracking-[0.3em] text-slate-400">Format</p>
+				<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Format</p>
 				<div className="mt-3 flex flex-wrap gap-3">
 					{formatTypes.map((formatType) => {
 						const active = selectedFormat === formatType.value;
@@ -616,7 +619,7 @@ export default function WorkbenchContentPanel({
 			<div className="rounded-3xl border border-current/10 bg-current/5 p-4">
 				<div className="flex items-center justify-between gap-3">
 					<div>
-						<p className="text-xs uppercase tracking-[0.3em] text-slate-400">Project definition</p>
+						<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Project definition</p>
 						<p className="mt-2 text-lg font-bold">{projectMeta.title}</p>
 					</div>
 					<span className="rounded-full border border-current/10 px-3 py-1 text-xs font-semibold">{projectMeta.stat}</span>
@@ -632,7 +635,7 @@ export default function WorkbenchContentPanel({
 			</div>
 
 			<div>
-				<p className="text-xs uppercase tracking-[0.3em] text-slate-400">Markdown editor</p>
+				<p className="text-xs uppercase tracking-[0.3em] text-(--muted-text)">Markdown editor</p>
 				<textarea
 					value={selectedMarkdown}
 					onChange={(event) => onChangeMarkdown(event.target.value)}
