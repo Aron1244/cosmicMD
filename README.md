@@ -1,43 +1,55 @@
-# Astro Starter Kit: Minimal
+**Overview**
+- **Cosmic MD**: a small Design System workbench that helps you design and export a DESIGN.md for markdown-first projects.
+- Built with Astro + React (islands), TypeScript and Tailwind CSS. Live-edit tokens (colors, spacing, radii, components) and export a ready-to-use DESIGN.md.
 
-```sh
-npm create astro@latest -- --template minimal
+**Key Features**
+- Interactive token editors (spacing, radius, components)
+- Live preview of components and theme
+- Exportable DESIGN.md with your chosen tokens and metadata
+- Google Fonts selection and accent/theme color controls
+
+**Quick Start**
+Prerequisites: Node.js 18+ and npm.
+
+Install and run the dev server:
+
+```bash
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Open http://localhost:4321 and use the workbench to edit tokens and generate your DESIGN.md.
 
-## 🚀 Project Structure
+**Development**
+- Edit the workbench component: [src/components/MarkdownWorkbench.tsx](src/components/MarkdownWorkbench.tsx)
+- Shared token definitions: [src/components/MarkdownWorkbench/data.ts](src/components/MarkdownWorkbench/data.ts)
+- Page entry: [src/pages/index.astro](src/pages/index.astro)
 
-Inside of your Astro project, you'll see the following folders and files:
+Build for production:
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+npm run build
+npm run preview
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+**Exporting**
+- Inside the workbench use the Download button to save `DESIGN.md`.
+- Use Copy to clipboard for quick copying into your repo.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+**Style & Lint**
+- Tailwind utilities are used across the app. If you change Tailwind config, re-run the dev server to re-optimize dependencies.
 
-Any static assets, like images, can be placed in the `public/` directory.
+**Contributing**
+- Fork, create a feature branch, and open a pull request.
+- Keep changes focused and add small commits. If you modify tokens or styles, include screenshots when possible.
 
-## 🧞 Commands
+**Troubleshooting**
+- If the dev server does not start, delete `node_modules` and `package-lock.json` and re-run `npm install`.
+- If build fails after Tailwind edits, ensure arbitrary properties follow Tailwind syntax (e.g. `text-(--muted-text)`).
 
-All commands are run from the root of the project, from a terminal:
+**License**
+- See the `LICENSE` file in the repository for license details.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+---
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+If you want, I can also commit this README update and push it to the remote. Tell me if you want a specific commit message.
